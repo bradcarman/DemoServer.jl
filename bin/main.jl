@@ -50,7 +50,7 @@ struct TagItem
     tagId::Number
 end
 struct RequestBody
-    tags::Vector{TagItem}
+    # tags::Vector{TagItem}
     startDate::String
     endDate::String
     appContextGuid::String
@@ -60,16 +60,41 @@ function helixRequest(req::HTTP.Request)
     req_body = JSON2.read(IOBuffer(HTTP.payload(req)), RequestBody)
     # run model and return data...
 
-    response = [TagResponse(tag.tagName, tag.tagId, req_body.appContextGuid, [TimeSeriesEvent("4/24/2025 - 4:05PM", 0.0)]) for tag in tags]
+    # response = [TagResponse(tag.tagName, tag.tagId, req_body.appContextGuid, [TimeSeriesEvent("4/24/2025 - 4:05PM", 0.0)]) for tag in req_body.tags]
   
+    response = [TagResponse("brad", 01234, req_body.appContextGuid, [TimeSeriesEvent("4/24/2025 - 4:05PM", 0.0)])]
+
+
     return HTTP.Response(200, JSON2.write(response))
 end
+
+#=
+"tags": [
+    {
+      "tagName": "SW_P1_Efficiency_1",
+      "tagId": 11708159
+    },
+    {
+      "tagName": "SW_P2_Current_1",
+      "tagId": 11708160
+    }
+  ],
+=#
+
+json = """{
+  "startDate": "2025-03-19T04:00:00.000Z",
+  "endDate": "2025-03-19T05:00:00.000Z",
+  "appContextGuid": "6557BEFD-4A2F-4AC6-B333-130A0EC25B20"
+}"""
+
+req_body = JSON2.read(IOBuffer(json), RequestBody)
+
 
 # use a plain `Dict` as a "data store"
 const ANIMALS = Dict{Int, Animal}()
 ANIMALS[1] = Animal("Dog","Brad")
 ANIMALS[2] = Animal("Cat","Siva")
-ANIMALS[2] = Animal("Fish","Marcus")
+ANIMALS[3] = Animal("Fish","Marcus")
 const NEXT_ID = Ref(0)
 function getNextId()
     id = NEXT_ID[]
@@ -115,7 +140,11 @@ HTTP.register!(ANIMAL_ROUTER, "GET", "/api/zoo/v1/animals/*", getAnimal)
 HTTP.register!(ANIMAL_ROUTER, "PUT", "/api/zoo/v1/animals", updateAnimal)
 HTTP.register!(ANIMAL_ROUTER, "DELETE", "/api/zoo/v1/animals/*", deleteAnimal)
 
-HTTP.register!(ANIMAL_ROUTER, "GET", "/api/helix", helixRequest)
+HTTP.register!(ANIMAL_ROUTER, "POST", "/api/helix", helixRequest)
+HTTP.register!(ANIMAL_ROUTER, "GET", "/**", ()->HTTP.Response(404, "Not Found"))
 
 # Start the server
 HTTP.serve(ANIMAL_ROUTER, ip"0.0.0.0", parse(Int, get(ENV, "PORT", "8080")))
+
+
+
