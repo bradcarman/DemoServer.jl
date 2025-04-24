@@ -6,5 +6,7 @@ version = "0.1.0"
 [deps]
 HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
 JSON2 = "2535ab7d-5cd8-5a07-80ac-9b1792aadce3"
+OpenSSL = "4d8831e6-92b7-49fb-bdf8-b643e874388c"
+OpenSSL_jll = "458c3c95-2e84-50aa-8efc-19380b2a3a95"
 Sockets = "6462fe0b-24de-5631-8697-dd941f90decc"
 UUIDs = "cf7118a7-6976-5b1a-9a39-7adc72f591a4"

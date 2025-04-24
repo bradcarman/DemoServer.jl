@@ -1,4 +1,4 @@
-using HTTP, Sockets, UUIDs, JSON2
+using OpenSSL, HTTP, Sockets, UUIDs, JSON2
 
 # modified Animal struct to associate with specific user
 mutable struct Animal
