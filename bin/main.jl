@@ -57,15 +57,23 @@ struct RequestBody
 end
 
 function helixRequest(req::HTTP.Request)
-    req_body = JSON2.read(IOBuffer(HTTP.payload(req)), RequestBody)
-    # run model and return data...
+    try
+        @show req
+        req_body = JSON2.read(IOBuffer(HTTP.payload(req)), RequestBody)
+        # run model and return data...
+    
+        @show req_body
+        # response = [TagResponse(tag.tagName, tag.tagId, req_body.appContextGuid, [TimeSeriesEvent("4/24/2025 - 4:05PM", 0.0)]) for tag in req_body.tags]
+      
+        response = [TagResponse("brad", 01234, req_body.appContextGuid, [TimeSeriesEvent("4/24/2025 - 4:05PM", 0.0)])]
+        @show response
+    
+        return HTTP.Response(200, JSON2.write(response))
+    catch err
+        println(err)
+        return HTTP.Response(404)
+    end
 
-    # response = [TagResponse(tag.tagName, tag.tagId, req_body.appContextGuid, [TimeSeriesEvent("4/24/2025 - 4:05PM", 0.0)]) for tag in req_body.tags]
-  
-    response = [TagResponse("brad", 01234, req_body.appContextGuid, [TimeSeriesEvent("4/24/2025 - 4:05PM", 0.0)])]
-
-
-    return HTTP.Response(200, JSON2.write(response))
 end
 
 #=
